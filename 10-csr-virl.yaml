@@ -1,0 +1,1931 @@
+lab:
+  description: ''
+  notes: ''
+  timestamp: 1582809799.861008
+  title: 10-csr
+  version: 0.0.3
+nodes:
+  - id: n0
+    label: R1
+    node_definition: csr1000v
+    x: -850
+    y: -100
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R1
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 100.64.1.1 255.255.255.255
+      !
+      interface Loopback1
+       ip address 100.70.1.1 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.101 255.255.255.0
+       ip nat outside
+       negotiation auto
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+       no shutdown
+      !
+      interface GigabitEthernet2
+       ip address 100.65.1.1 255.255.255.0
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.64.12.1 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet4
+       ip address 100.64.14.1 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router ospf 1
+       network 100.64.0.0 0.1.255.255 area 0
+       router-id 1.1.1.1
+      !
+      router bgp 100
+       bgp router-id 1.1.1.1
+       neighbor 100.65.1.11 remote-as 2222
+       neighbor 100.64.2.2 remote-as 100
+       neighbor 100.64.2.2 update-source loop0
+       neighbor 100.64.2.2 next-hop-self
+       neighbor 100.64.2.2 route-reflector-client
+       neighbor 100.64.3.3 remote-as 100
+       neighbor 100.64.3.3 update-source loop0
+       neighbor 100.64.3.3 route-reflector-client
+       neighbor 100.64.3.3 next-hop-self
+       neighbor 100.64.4.4 remote-as 100
+       neighbor 100.64.4.4 update-source loop0
+       neighbor 100.64.4.4 route-reflector-client
+       neighbor 100.64.4.4 next-hop-self
+       neighbor 100.64.5.5 remote-as 100
+       neighbor 100.64.5.5 update-source loop0
+       neighbor 100.64.5.5 route-reflector-client
+       neighbor 100.64.5.5 next-hop-self
+       network 100.70.1.1 mask 255.255.255.255
+       network 100.64.1.1 mask 255.255.255.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n1
+    label: R2
+    node_definition: csr1000v
+    x: -750
+    y: -200
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R2
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 100.64.2.2 255.255.255.255
+      !
+      interface Loopback1
+       ip address 100.70.2.2 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.102 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 100.64.12.2 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.64.23.2 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router ospf 1
+       network 100.64.0.0 0.1.255.255 area 0
+       router-id 2.2.2.2
+      !
+      router bgp 100
+       bgp router-id 2.2.2.2
+       neighbor 100.64.1.1 remote-as 100
+       neighbor 100.64.1.1 update-source loop0
+       neighbor 100.64.1.1 next-hop-self
+       network 100.70.2.2 mask 255.255.255.255
+       network 100.64.2.2 mask 255.255.255.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n2
+    label: R3
+    node_definition: csr1000v
+    x: -550
+    y: -200
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R3
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 100.64.3.3 255.255.255.255
+      !
+      interface Loopback1
+       ip address 100.70.3.3 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.103 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp trasmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 100.64.23.3 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.65.3.3 255.255.255.0
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router ospf 1
+       network 100.64.0.0 0.1.255.255 area 0
+       router-id 3.3.3.3
+      !
+      router bgp 100
+       bgp router-id 3.3.3.3
+       neighbor 100.65.3.6 remote-as 1111
+       neighbor 100.64.1.1 remote-as 100
+       neighbor 100.64.1.1 update-source loop0
+       neighbor 100.64.1.1 next-hop-self
+       network 100.70.3.3 mask 255.255.255.255
+       network 100.64.3.3 mask 255.255.255.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n3
+    label: R6
+    node_definition: csr1000v
+    x: -500
+    y: -100
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R6
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 198.51.100.6 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.106 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 100.65.2.6 255.255.255.0
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.65.3.6 255.255.255.0
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet4
+       ip address 198.51.100.105 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet5
+       ip address 198.51.100.101 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router eigrp CISCO-LIVE
+       add ipv4 unicast auto 1111
+        eigrp router-id 6.6.6.6
+        network 198.51.100.0 0.0.0.255
+        af-interface gig4
+         summary 198.51.100.0/24
+        af-interface gig5
+         summary 198.51.100.0/24
+        topology base
+         red bgp 1111 metric 1000 10 255 1 1500
+      !
+      router bgp 1111
+       bgp router-id 6.6.6.6
+       neighbor 100.65.2.5 remote-as 100
+       neighbor 100.65.3.3 remote-as 100
+       network 198.51.100.0 mask 255.255.255.0
+      !!
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet5
+        type: physical
+  - id: n4
+    label: R4
+    node_definition: csr1000v
+    x: -750
+    y: 0
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R4
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.103
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 100.64.4.4 255.255.255.255
+      !
+      interface Loopback1
+       ip address 100.70.4.4 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.104 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 100.64.14.4 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.64.45.4 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router ospf 1
+       network 100.64.0.0 0.1.255.255 area 0
+       router-id 4.4.4.4
+      !
+      router bgp 100
+       bgp router-id 4.4.4.4
+       neighbor 100.64.1.1 remote-as 100
+       neighbor 100.64.1.1 update-source loop0
+       neighbor 100.64.1.1 next-hop-self
+       network 100.70.4.4 mask 255.255.255.255
+       network 100.64.4.4 mask 255.255.255.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n5
+    label: R5
+    node_definition: csr1000v
+    x: -600
+    y: 0
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R5
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 100.64.5.5 255.255.255.255
+      !
+      interface Loopback1
+       ip address 100.70.5.5 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.105 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 100.64.45.5 255.255.255.0
+       ip ospf network point-to-point
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 100.65.2.5 255.255.255.0
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router ospf 1
+       network 100.64.0.0 0.1.255.255 area 0
+       router-id 5.5.5.5
+      !
+      router bgp 100
+       bgp router-id 5.5.5.5
+       neighbor 100.65.2.6 remote-as 1111
+       neighbor 100.64.1.1 remote-as 100
+       neighbor 100.64.1.1 update-source loop0
+       neighbor 100.64.1.1 next-hop-self
+       network 100.70.5.5 mask 255.255.255.255
+       network 100.64.5.5 mask 255.255.255.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n6
+    label: R7
+    node_definition: csr1000v
+    x: -400
+    y: -200
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R7
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 198.51.100.7 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.107 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 198.51.100.106 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 198.51.100.113 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router eigrp CISCO-LIVE
+       add ipv4 unicast auto 1111
+        eigrp router-id 7.7.7.7
+        network 198.51.100.0 0.0.0.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n7
+    label: R9
+    node_definition: csr1000v
+    x: -200
+    y: -200
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R9
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 198.51.100.9 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.109 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 198.51.100.114 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router eigrp CISCO-LIVE
+       add ipv4 unicast auto 1111
+        eigrp router-id 9.9.9.9
+        network 198.51.100.0 0.0.0.255
+      !
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n8
+    label: R8
+    node_definition: csr1000v
+    x: -400
+    y: 0
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R8
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 198.51.100.8 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.108 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 198.51.100.102 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      interface GigabitEthernet3
+       ip address 198.51.100.109 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router eigrp CISCO-LIVE
+       add ipv4 unicast auto 1111
+        eigrp router-id 8.8.8.8
+        network 198.51.100.0 0.0.0.255
+      !
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n9
+    label: R10
+    node_definition: csr1000v
+    x: -200
+    y: 0
+    configuration: |-
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no platform punt-keepalive disable-kernel-core
+      platform console auto
+      !
+      hostname R10
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      no logging console
+      vrf definition Mgmt-vrf
+       !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      enable secret 5 $1$OAMZ$DDrEWyP3OXFg4CFnNFm9r/
+
+      !
+      no aaa new-model
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      !
+      ip domain name lab.dmfigol.me
+
+      !
+      !
+      diagnostic bootup level minimal
+      !
+      spanning-tree extend system-id
+      !
+      username vagrant privilege 15 password 0 vagrant
+      username cisco privilege 15 secret cisco
+      !
+      !
+      redundancy
+      !
+      !
+      !
+      !
+      !
+      ip tftp source-interface GigabitEthernet1
+      ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 192.168.153.1
+      !
+      !
+      !
+      ip ssh pubkey-chain
+      username vagrant
+      key-string
+      AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eW
+      W6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o
+      9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXP
+      ITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pz
+      C6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZE
+      nDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXz
+      cWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+      exit
+      !
+      !
+      !
+      netconf-yang
+      restconf
+      ip http secure-server
+      !
+      interface Loopback0
+       ip address 198.51.100.10 255.255.255.255
+      !
+      interface GigabitEthernet1
+       vrf forwarding Mgmt-vrf
+       ip address 192.168.153.110 255.255.255.0
+       negotiation auto
+       no shutdown
+       no cdp enable
+       no lldp transmit
+       no lldp receive
+      !
+      interface GigabitEthernet2
+       ip address 198.51.100.110 255.255.255.252
+       negotiation auto
+       no mop enabled
+       no mop sysid
+       cdp enable
+       no shutdown
+      !
+      router eigrp CISCO-LIVE
+       add ipv4 unicast auto 1111
+        eigrp router-id 10.10.10.10
+        network 198.51.100.0 0.0.0.255
+      !
+      !
+      ip forward-protocol nd
+      no ip http server
+      ip http authentication local
+      ip http secure-server
+      !
+      !
+      ip ssh version 2
+      ip scp server enable
+      cdp run
+      lldp run
+      !
+      !
+      !
+      control-plane
+
+      line con 0
+       stopbits 1
+       privilege level 15
+       logging synchronous
+       transport preferred none
+      line vty 0 14
+       login local
+       transport input all
+       privilege level 15
+       transport preferred none
+      !
+      end
+    image_definition: csr1000v-161101b
+    tags: []
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet1
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet2
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet3
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet4
+        type: physical
+  - id: n10
+    label: breakout
+    node_definition: unmanaged_switch
+    x: -500
+    y: 150
+    configuration: ''
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: port0
+        type: physical
+      - id: i1
+        slot: 1
+        label: port1
+        type: physical
+      - id: i2
+        slot: 2
+        label: port2
+        type: physical
+      - id: i3
+        slot: 3
+        label: port3
+        type: physical
+      - id: i4
+        slot: 4
+        label: port4
+        type: physical
+      - id: i5
+        slot: 5
+        label: port5
+        type: physical
+      - id: i6
+        slot: 6
+        label: port6
+        type: physical
+      - id: i7
+        slot: 7
+        label: port7
+        type: physical
+      - id: i8
+        slot: 8
+        label: port8
+        type: physical
+      - id: i9
+        slot: 9
+        label: port9
+        type: physical
+      - id: i10
+        slot: 10
+        label: port10
+        type: physical
+      - id: i11
+        slot: 11
+        label: port11
+        type: physical
+      - id: i12
+        slot: 12
+        label: port12
+        type: physical
+      - id: i13
+        slot: 13
+        label: port13
+        type: physical
+      - id: i14
+        slot: 14
+        label: port14
+        type: physical
+      - id: i15
+        slot: 15
+        label: port15
+        type: physical
+  - id: n11
+    label: external
+    node_definition: external_connector
+    x: -700
+    y: 150
+    configuration: bridge0
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: port
+        type: physical
+links:
+  - id: l0
+    i1: i0
+    n1: n10
+    i2: i0
+    n2: n11
+  - id: l1
+    i1: i1
+    n1: n0
+    i2: i1
+    n2: n10
+  - id: l2
+    i1: i1
+    n1: n1
+    i2: i2
+    n2: n10
+  - id: l3
+    i1: i1
+    n1: n2
+    i2: i3
+    n2: n10
+  - id: l4
+    i1: i1
+    n1: n4
+    i2: i4
+    n2: n10
+  - id: l5
+    i1: i1
+    n1: n5
+    i2: i5
+    n2: n10
+  - id: l6
+    i1: i1
+    n1: n3
+    i2: i6
+    n2: n10
+  - id: l7
+    i1: i1
+    n1: n6
+    i2: i7
+    n2: n10
+  - id: l8
+    i1: i1
+    n1: n8
+    i2: i8
+    n2: n10
+  - id: l9
+    i1: i1
+    n1: n7
+    i2: i9
+    n2: n10
+  - id: l10
+    i1: i1
+    n1: n9
+    i2: i10
+    n2: n10
+  - id: l11
+    i1: i2
+    n1: n1
+    i2: i3
+    n2: n0
+  - id: l12
+    i1: i2
+    n1: n2
+    i2: i3
+    n2: n1
+  - id: l13
+    i1: i4
+    n1: n0
+    i2: i2
+    n2: n4
+  - id: l14
+    i1: i3
+    n1: n4
+    i2: i2
+    n2: n5
+  - id: l15
+    i1: i3
+    n1: n5
+    i2: i2
+    n2: n3
+  - id: l16
+    i1: i3
+    n1: n2
+    i2: i3
+    n2: n3
+  - id: l17
+    i1: i4
+    n1: n3
+    i2: i2
+    n2: n6
+  - id: l18
+    i1: i5
+    n1: n3
+    i2: i2
+    n2: n8
+  - id: l19
+    i1: i3
+    n1: n6
+    i2: i2
+    n2: n7
+  - id: l20
+    i1: i3
+    n1: n8
+    i2: i2
+    n2: n9
